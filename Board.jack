@@ -1,0 +1,220 @@
+/* the board for the game, which holds all the information on which grids are set etc. 
+Represented in this way by a 1d-Array:
+       0 1 2     
+    0 |0|1|2|  
+    1 |3|4|5|
+    2 |6|7|8|
+
+Specific cells can be indexed with cells[(3 * row) + col]
+*/
+
+class Board {
+
+    //
+    field Array cells;
+    /* used for graphical representation */
+    field int boardXPos;
+    field int boardYPos;
+    field int size;
+    field int cellSize;
+
+    /* constructs a new board with all cells on it */
+    constructor Board new(int sizeVal) {
+
+        /* used for setting up cells */
+        var int i;
+        var int row; // used to calculate x-Position of cell
+        var int col; // used to calculate y-Position of cell
+
+        /* setting values for graphical representation */
+        let size = sizeVal;
+        let boardXPos = 256 - (size / 2);
+        let boardYPos = 128 - (size / 2);
+        let cellSize = sizeVal / 3;
+
+        /* initializing cells on board */
+        let cells = Array.new(9);
+        let i = 0;
+        while (i < 9) {
+            let row = i / 3;                // calculate which row we're on
+            let col = i - (3 * (i / 3));    // calculate which column we're on
+            let cells[i] = Cell.new(boardXPos + (col * cellSize), boardYPos + (row * cellSize), cellSize);
+            let i = i + 1;
+        }
+                 
+        return this;
+    }
+
+    method void drawBoard() {
+        do Screen.setColor(true);
+
+        /* draws the 90 x 90 frame of the board */
+        do Screen.drawLine(boardXPos, boardYPos, boardXPos + size, boardYPos); // upper line
+        do Screen.drawLine(boardXPos, boardYPos, boardXPos, boardYPos + size); // left line
+        do Screen.drawLine(boardXPos, boardYPos + size, boardXPos + size, boardYPos + size); // lower line
+        do Screen.drawLine(boardXPos + size, boardYPos, boardXPos + size, boardYPos + size); // right line
+
+        /* draws the two horizontal lines of the grid */
+        do Screen.drawLine(boardXPos, boardYPos + (size * 1/3), boardXPos + size, boardYPos + (size * 1/3));
+        do Screen.drawLine(boardXPos, boardYPos + (size * 2/3), boardXPos + size, boardYPos + (size * 2/3));
+
+        /* draws the two vertical lines of the grid */
+        do Screen.drawLine(boardXPos + (size * 1/3), boardYPos, boardXPos + (size * 1/3), boardYPos + size);
+        do Screen.drawLine(boardXPos + (size * 2/3), boardYPos, boardXPos + (size * 2/3), boardYPos + size);
+
+        return;
+    }
+
+    /* accessors */
+    method Cell getCell(int row, int col) { return cells[(3 * row) + col]; }
+
+    /* Helper methods to check state of the board */
+
+    /* get the sum of a row */
+    method int getRowSum(int row) {
+        var Cell c;
+        var int sum;
+        var int col;
+
+        let sum = 0;
+        let col = 0;
+        while(col < 3) {
+            let c = cells[(row * 3) + col];
+            let sum = sum + c.getValue();
+            let col = col + 1;
+        }
+
+        return sum;
+    }
+
+    /* Get the sum of a column */
+    method int getColSum(int col) {
+        var Cell c;
+        var int sum;
+        var int row;
+
+        let sum = 0;
+        let row = 0;
+        while(row < 3) {
+            let c = cells[(row * 3) + col];
+            let sum = sum + c.getValue();
+            let row = row + 1;
+        }
+
+        return sum;
+    }
+
+    /* Get the sum of one the diagonals */
+    method int getDiagSum(boolean leftToRight) {
+        var Cell c;
+        var int sum;
+        var int row;
+
+        let sum = 0;
+        let row = 0;
+
+        // determine which one to be returned
+        if (leftToRight) {
+            while (row < 3) {
+                let c = cells[row * 4];
+                let sum = sum + c.getValue();
+                let row = row + 1;
+            }
+        }else {
+            while (row < 3) {
+                let c = cells[(row * 2) + 2];
+                let sum = sum + c.getValue();
+                let row = row + 1;
+            }
+        }
+
+        return sum;
+    }
+
+    /* Returns an array to get the values of all cells */
+    method Array getAllCellValues() {
+        var Array values;
+        var int i;
+        var Cell c;
+        let values = Array.new(9);
+        let i = 0;
+
+        while (i < 9) {
+            let c = cells[i];
+            let values[i] = c.getValue();
+            let i = i + 1;
+        }
+
+        return values;    
+    }
+
+    /* disposes this board */
+    method void dispose() {
+        var int i;
+        var Cell cell;
+        let i = 0;
+
+        /* dispose all the cell */
+        while (i < 9) {
+            let cell = cells[i];
+            do cell.dispose();
+            let i = i + 1;
+        }
+        do cells.dispose(); // disposes array which held cells
+        do Memory.deAlloc(this); // disposes board
+
+        return;
+    }
+
+    /* testing method for drawing Cells */
+    method void drawCellTest() {
+        var Cell testO;
+        var Cell testX;
+        var Cell test;
+        var int i;
+
+        let testO = Cell.new(boardXPos, boardYPos, cellSize);
+        let testX = Cell.new(boardXPos + cellSize, boardYPos + cellSize, cellSize);
+
+        let i = 0;
+        while (i < 9) {
+            let test = cells[i];
+            do test.drawO();
+            let i = i + 1;
+        }
+
+        return;
+    }
+
+    /* for printing the board */
+    method void print() {
+        var int row;
+        var Cell c;
+        var int col;
+
+        let row = 0;
+
+        while (row < 3) {
+            let col = 0;
+            while (col < 3) {
+                let c = cells[(3 * row) + col];
+                if (c.getValue() = 0) {
+                    do Output.printString("|_");
+                }
+                if (c.getValue() = 1) {
+                    do Output.printString("|x");
+                }
+                if (c.getValue() = -1) {
+                    do Output.printString("|o");
+                }
+                let col = col + 1;
+            }
+            do Output.printString("|");
+            do Output.println();
+            let row = row + 1;
+        }
+        return;
+    }
+    
+
+}

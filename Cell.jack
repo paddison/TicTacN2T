@@ -1,0 +1,59 @@
+class Cell {
+
+    /* 
+    a cell can have three values:
+        not set = 0
+        x = 1
+        o = -1
+    */
+    field int value;
+
+    /* the position and size of the of cell (anchor = top-left) (only used for graphic representation) */
+    field int xPos;
+    field int yPos;
+    field int size;
+
+    constructor Cell new(int xPosVal, int yPosVal, int sizeVal) {
+        
+        let value = 0; // initialize value to 0 (not set)
+        
+        /* graphical representation */
+        let xPos = xPosVal;
+        let yPos = yPosVal;
+        let size = sizeVal;
+        
+
+        return this;
+    }
+
+    /* draws an x on the cell */
+    method void drawX() {
+        do Screen.setColor(true);
+        do Screen.drawLine(xPos, yPos, xPos + size, yPos + size);   // top-left to bottom-right
+        do Screen.drawLine(xPos + size, yPos, xPos, yPos + size);   // top-right to bottom-left
+        return;
+    }
+
+    /* draws an o on the cell */
+    method void drawO() {
+        do Screen.setColor(true);
+        do Screen.drawCircle(xPos + (size / 2), yPos + (size / 2), (size / 2)); // go to center of cell and draw circle 
+        return;
+    }
+
+    /* accessors */
+    method int getXPos() { return xPos; }
+    method int getYPos() { return yPos; }
+    method int getValue() { return value; }
+    method void setValue(int val) { 
+        let value = val;
+        return; 
+    }
+    
+    /* disposes this cell */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+}

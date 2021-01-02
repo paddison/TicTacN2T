@@ -1,0 +1,17 @@
+class Main {
+    
+    function void main() {
+        var boolean tests;
+        var Game g;
+        let tests = true;
+        if (tests) {
+            do Test.run();
+        }
+        else { 
+            let g = Game.new();
+            do g.init();
+        }
+        
+        return;
+    }
+}

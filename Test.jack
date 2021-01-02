@@ -1,0 +1,194 @@
+// for testing purposes
+
+class Test {
+
+    static Game g;
+
+    function void run() {
+        var Board b;
+        var Cell c;
+        var int sum;
+
+        /* 
+        Board 0:
+            |o|o|o|
+            |_|_|_|
+            |_|_|_|
+        */
+        let g =  Game.new();
+        let b =  g.getBoard();
+        let c = b.getCell(0, 0);
+        do c.setValue(-1);
+        let c = b.getCell(0, 1);
+        do c.setValue(-1);
+        let c = b.getCell(0, 2);
+        do c.setValue(-1);
+
+        /* run tests */
+        do Test.assertSum(-3, b.getRowSum(0));
+        do Test.checkGameState();
+        do b.dispose();
+        
+        /* 
+        Board 1:
+            |_|_|_|
+            |x|x|x|
+            |_|_|_|
+        */
+        let g =  Game.new();
+        let b =  g.getBoard();
+        let c = b.getCell(1, 0);
+        do c.setValue(1);
+        let c = b.getCell(1, 1);
+        do c.setValue(1);
+        let c = b.getCell(1, 2);
+        do c.setValue(1);
+
+        /* run tests */
+        do Test.checkGameState();
+        do Test.assertSum(3, b.getRowSum(1));
+        do b.dispose();
+
+        /* 
+        Board 2:
+            |o|_|_|
+            |o|_|_|
+            |o|_|_|
+        */
+        let g =  Game.new();
+        let b =  g.getBoard();
+        let c = b.getCell(0, 0);
+        do c.setValue(-1);
+        let c = b.getCell(1, 0);
+        do c.setValue(-1);
+        let c = b.getCell(2, 0);
+        do c.setValue(-1);
+
+        /* run tests */
+        do Test.checkGameState();
+        do Test.assertSum(-3, b.getColSum(0));
+        do b.dispose();
+
+        /* 
+        Board 3:
+            |_|_|x|
+            |_|_|x|
+            |_|_|x|
+        
+        let g =  Game.new();
+        let b =  g.getBoard();
+        let c = b.getCell(0, 2);
+        do c.setValue(1);
+        let c = b.getCell(1, 2);
+        do c.setValue(1);
+        let c = b.getCell(2, 2);
+        do c.setValue(1);
+
+        /* run tests 
+        do Test.checkGameState();
+        do Test.assertSum(3, b.getColSum(2));
+        do b.dispose();
+        */
+        /* 
+
+        Board 4:
+            |x|_|_|
+            |_|x|_|
+            |_|_|x|
+        */
+        let g =  Game.new();
+        let b =  g.getBoard();
+        let c = b.getCell(0, 0);
+        do c.setValue(1);
+        let c = b.getCell(1, 1);
+        do c.setValue(1);
+        let c = b.getCell(2, 2);
+        do c.setValue(1);
+
+        /* run tests */
+        do Test.checkGameState();
+        do Test.assertSum(3, b.getDiagSum(true));
+        do b.dispose();
+
+        do Output.printInt(Memory.peek(b + 1));
+        do Output.println();
+        do Output.printInt(b);
+        do Output.println();
+        do Output.printInt(Memory.peek(b + 1));
+        do Output.println();
+
+        
+        /* 
+        Board 5:
+            |x|_|o|
+            |_|o|_|
+            |x|o|x|
+        
+        let g =  Game.new();
+        let b =  g.getBoard();
+        let c = b.getCell(0, 0);
+        do c.setValue(1);
+        let c = b.getCell(0, 2);
+        do c.setValue(-1);
+        let c = b.getCell(1, 1);
+        do c.setValue(-1);
+        let c = b.getCell(2, 0);
+        do c.setValue(1);
+        let c = b.getCell(2, 1);
+        do c.setValue(-1);
+        let c = b.getCell(2, 2);
+        do c.setValue(1);
+
+        /* run tests 
+        do Test.checkGameState();
+        do Test.assertSum(0, b.getRowSum(0));
+        do Test.assertSum(-1, b.getRowSum(1));
+        do Test.assertSum(1, b.getRowSum(2));
+        do Test.assertSum(2, b.getColSum(0));
+        do Test.assertSum(-2, b.getColSum(1));
+        do Test.assertSum(0, b.getColSum(2));
+        do Test.assertSum(1, b.getDiagSum(true));
+        do Test.assertSum(-1, b.getDiagSum(false));
+        do b.dispose();
+        */
+        return;
+        
+    }
+
+    function void checkGameState() {
+        var Board b;
+        var Boolean gameOver;
+
+        let b = g.getBoard();
+        do b.print(); 
+
+        let gameOver = g.checkGameOver();
+
+        if (gameOver) {
+            do Output.printString("GameOver, Winner: ");
+            do Output.printString(g.getWinner()); 
+            
+        }else {
+            do Output.printString("Not GameOver");
+        }
+        do Output.println();
+        return;
+
+    }
+
+    function void assertSum(int expected, int actual) {
+        if (expected = actual) {
+            do Output.printString("Passed assertSum.");
+        }
+        else {
+            do Output.printString("Error: Expected ");
+            do Output.printInt(expected);
+            do Output.printString(", but got ");
+            do Output.printInt(actual);
+            do Output.printString(".");
+            
+        }
+        do Output.println();
+        return;
+    }
+}

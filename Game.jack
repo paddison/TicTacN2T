@@ -1,0 +1,90 @@
+class Game { 
+    field Board b;
+    field int playerX;
+    field int playerO;    
+    field string winner;
+    field string loser;
+
+    constructor Game new() {
+        let b = Board.new(90);
+        let playerX = 1;
+        let playerO = -1;
+        
+        return this;
+    }
+
+    method void init() {
+        do b.drawBoard();
+        return;
+    }
+
+    /* accessors */
+    method Board getBoard() { return b; }
+
+    /* 
+        Since all cells hold the values 1 for x or -1 for o,
+        we calculate the sum for each row, column and diagonal.
+        If the sum at one point is 3 or -3, it means one of the players has won the game. 
+    */
+    method boolean checkGameOver() {
+        var int sum;
+        var int i;
+
+        /* check the rows */
+        let i = 0;
+        while (i < 3) {
+            let sum = b.getRowSum(i);
+            if(checkGameSum(sum)) { return true; }
+            let i = i + 1;
+        }
+
+        /* check the columns */
+        let i = 0;
+        while (i < 3) {
+            let sum = b.getColSum(i);
+            if(checkGameSum(sum)) { return true; }
+            let i = i + 1;
+        }
+
+        /* checks the diagonals */
+        let sum = b.getDiagSum(true);  // first diagonal
+        if(checkGameSum(sum)) { return true; }
+
+        let sum = b.getDiagSum(false);  // second diagonal
+        if(checkGameSum(sum)) { return true; }
+
+        /* if no winner was found, return false */
+        return false;
+    }
+
+    /* returns name of the winner */
+    method String getWinner() {
+        return winner;
+    }
+
+    /* returns name of the loser */
+    method String getLoser() {
+        return loser;
+    }
+
+    method boolean checkGameSum(int sum) {
+        if (sum = 3) {
+            let winner = "x";
+            let loser = "o";
+            return true;
+        }
+        if (sum = -3) {
+            let winner = "o";
+            let loser = "x";
+            return true;
+        }
+
+        return false;
+    }
+
+    method void dispose() {
+        do b.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+}
