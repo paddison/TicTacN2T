@@ -6,6 +6,82 @@ class Test {
 
     function void run() {
         var Board b;
+        var Cell c; 
+        let g =  Game.new();
+        let b = g.getBoard();
+        let c = b.getCell(0, 0);
+        do c.setValue(1);
+        let c = b.getCell(0, 2);
+        do c.setValue(-1);
+        let c = b.getCell(1, 1);
+        do c.setValue(-1);
+        let c = b.getCell(2, 0);
+        do c.setValue(1);
+        let c = b.getCell(2, 1);
+        do c.setValue(-1);
+        let c = b.getCell(2, 2);
+        do c.setValue(1);
+        do Test.testGraphics(b);
+        return;
+    }
+
+    function void testGraphics(Board b) {
+        //do Test.testCellToggle();
+        do Test.testSelectCell(b);
+        return;
+    }
+
+    function void testSelectCell(Board b) {
+
+        let b = g.getBoard();
+        do b.drawBoard();
+        do g.selectCell();
+        return;
+
+    }
+
+    function void testCellToggle() {
+        var Board b;
+        var Cell c; 
+        var int row;
+        var int col;
+
+        let b = g.getBoard();
+        do b.drawBoard();
+
+        /* set all to active */
+        let row = 0;
+        while (row < 3) {
+            let col = 0;
+            while (col < 3) {
+                let c = b.getCell(row,col);
+                do c.toggle(true);
+                let col = col + 1;
+                do Sys.wait(100);
+            }
+            let row = row + 1;
+        }
+
+        /* set all to inactive */
+        let row = 0;
+        while (row < 3) {
+            let col = 0;
+            while (col < 3) {
+                let c = b.getCell(row,col);
+                do c.toggle(false);
+                let col = col + 1;
+                do Sys.wait(100);
+            }
+            let row = row + 1;
+        }
+
+        do b.dispose();
+        return;
+    }
+
+
+    function void testGameMechanics() {
+        var Board b;
         var Cell c;
         var int sum;
 
@@ -15,7 +91,6 @@ class Test {
             |_|_|_|
             |_|_|_|
         */
-        let g =  Game.new();
         let b =  g.getBoard();
         let c = b.getCell(0, 0);
         do c.setValue(-1);
@@ -54,7 +129,7 @@ class Test {
             |o|_|_|
             |o|_|_|
             |o|_|_|
-        */
+        
         let g =  Game.new();
         let b =  g.getBoard();
         let c = b.getCell(0, 0);
@@ -64,11 +139,12 @@ class Test {
         let c = b.getCell(2, 0);
         do c.setValue(-1);
 
-        /* run tests */
+        /* run tests 
         do Test.checkGameState();
         do Test.assertSum(-3, b.getColSum(0));
         do b.dispose();
 
+        */
         /* 
         Board 3:
             |_|_|x|
@@ -109,20 +185,13 @@ class Test {
         do Test.checkGameState();
         do Test.assertSum(3, b.getDiagSum(true));
         do b.dispose();
-
-        do Output.printInt(Memory.peek(b + 1));
-        do Output.println();
-        do Output.printInt(b);
-        do Output.println();
-        do Output.printInt(Memory.peek(b + 1));
-        do Output.println();
-
         
         /* 
         Board 5:
             |x|_|o|
             |_|o|_|
             |x|o|x|
+        */
         
         let g =  Game.new();
         let b =  g.getBoard();
@@ -139,7 +208,7 @@ class Test {
         let c = b.getCell(2, 2);
         do c.setValue(1);
 
-        /* run tests 
+        /* run tests */
         do Test.checkGameState();
         do Test.assertSum(0, b.getRowSum(0));
         do Test.assertSum(-1, b.getRowSum(1));
@@ -150,9 +219,8 @@ class Test {
         do Test.assertSum(1, b.getDiagSum(true));
         do Test.assertSum(-1, b.getDiagSum(false));
         do b.dispose();
-        */
-        return;
         
+        return;
     }
 
     function void checkGameState() {
@@ -166,8 +234,6 @@ class Test {
 
         if (gameOver) {
             do Output.printString("GameOver, Winner: ");
-            do Output.printString(g.getWinner()); 
-            
         }else {
             do Output.printString("Not GameOver");
         }

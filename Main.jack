@@ -3,7 +3,7 @@ class Main {
     function void main() {
         var boolean tests;
         var Game g;
-        let tests = true;
+        let tests = false;
         if (tests) {
             do Test.run();
         }

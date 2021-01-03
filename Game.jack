@@ -2,22 +2,152 @@ class Game {
     field Board b;
     field int playerX;
     field int playerO;    
-    field string winner;
-    field string loser;
+    field boolean winner;
+    field int currentPlayer;
 
     constructor Game new() {
         let b = Board.new(90);
         let playerX = 1;
         let playerO = -1;
+
         
         return this;
     }
 
     method void init() {
         do b.drawBoard();
+        let currentPlayer = playerX;
+        do run();
         return;
     }
 
+    method void run() {
+        var Cell c;
+        let winner = false;
+        while(~(checkGameOver())) {
+
+            /* print information onf top */
+            do Output.moveCursor(0,0);
+            do Output.printString("Current Player: ");
+            if (currentPlayer = playerX) {
+                do Output.printString("x.");
+            }else {
+                do Output.printString("o."); 
+            }
+            do Output.println();
+            let c = selectCell();
+
+            if (currentPlayer = playerX) {
+                do c.setValue(playerX);
+                do c.drawX();
+                let currentPlayer = playerO;
+            }else {
+                do c.setValue(playerO);
+                do c.drawO();
+                let currentPlayer = playerX;
+            }
+            
+        }
+        if (winner) {
+            do Output.printString("Game Over, Winner: ");
+            do Output.printString(getWinner());  
+        }else {
+            do Output.printString("Tie.");
+        }
+        
+        return;
+    }
+
+    /* mpve through cells with left and right arrow keys */
+    method Cell selectCell() {
+        var boolean selected;
+        var char key;
+        var int pointer;
+        var Cell c;
+        var it dir;
+        let selected = false;
+        let pointer = 0;
+        let dir = 1;
+        let pointer = movePointer(pointer, dir);
+        let c = b.getCell(0, pointer);
+        do c.toggle(true);
+        while(~selected) {
+            while(key = 0) {
+                let key = Keyboard.keyPressed();
+            }
+            do c.toggle(false);
+            if (key = 128) {
+                let selected = true;
+            }else {
+                
+                if (key = 130) {  // left arrow 
+                    let dir = -1;    
+                    let pointer = checkPointerValue(pointer - 1, dir); 
+                }   
+                if (key = 132) {  // right arrow
+                    let dir = 1; 
+                    let pointer = checkPointerValue(pointer + 1, dir);
+                }  
+                let pointer = movePointer(pointer, dir);
+                let c = b.getCell(0, pointer);
+                do c.toggle(true);
+                let key = 0;       
+            } 
+            do Sys.wait(250); 
+        }
+        return c;
+    }
+
+    /* selects a cell from position of pointer. if cell not empty move until empty one is found */
+    method int movePointer(int pointer, int dir) {
+        var Cell c;
+        /* getCell returns a cell from a 1d array by calculating 3 * row + cell. 
+        * if we want to go through it in a linear fashion we can pretend to start at row 0 and 
+        * then just increment or decrement the pointer depending on the direction.
+        */  
+        let c = b.getCell(0, pointer);
+        if (dir = -1) {
+            while(~(c.getValue() = 0)) {              
+                let pointer = checkPointerValue(pointer - 1, dir);
+                let c = b.getCell(0, pointer); 
+            }
+        } else {
+            while(~(c.getValue() = 0)) {
+                let pointer = checkPointerValue(pointer + 1, dir);
+                let c = b.getCell(0, pointer);
+            }
+        }
+        return pointer;
+    }
+
+    method int checkPointerValue(int pointer, int dir) {
+        if((dir = -1) & (pointer < 0)) {
+            return 8;
+        }
+        if ((dir = 1) & (pointer > 8)) {
+            return 0;
+        }
+        
+        return pointer;
+    }
+
+    method boolean makeMove(int row, int col) {
+        var Cell c;
+        let c = b.getCell(row, col);
+        if(c.getValue() = 0) {
+            do c.setValue(currentPlayer);
+            if (currentPlayer = playerX) {
+                do c.drawX();
+            }else {
+                do c.drawO();
+            }
+            return true;
+        }else {
+            do Output.printString("Must select empty cell.");
+            do Keyboard.keyPressed("Press any key to continue.");
+            return false;
+        }
+    }
     /* accessors */
     method Board getBoard() { return b; }
 
@@ -53,33 +183,28 @@ class Game {
         let sum = b.getDiagSum(false);  // second diagonal
         if(checkGameSum(sum)) { return true; }
 
+        if(b.getEmptyCellsNum() = 0) { return true; } // if no empty cells are left it means we have a tie. 
+
         /* if no winner was found, return false */
         return false;
     }
 
-    /* returns name of the winner */
+    /* returns name of the winner (the one who is not the active player) */
     method String getWinner() {
-        return winner;
-    }
-
-    /* returns name of the loser */
-    method String getLoser() {
-        return loser;
+        if (currentPlayer = playerX) {
+            return "o";
+        }else {
+            return "x";
+        }
     }
 
     method boolean checkGameSum(int sum) {
-        if (sum = 3) {
-            let winner = "x";
-            let loser = "o";
+        if ((sum = 3) | (sum = -3)) {
+            let winner = true;
             return true;
-        }
-        if (sum = -3) {
-            let winner = "o";
-            let loser = "x";
-            return true;
-        }
-
-        return false;
+        }else {
+            return false;
+        }    
     }
 
     method void dispose() {

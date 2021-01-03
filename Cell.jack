@@ -41,6 +41,13 @@ class Cell {
         return;
     }
 
+    /* display indicator that cell is selected */
+    method void toggle(boolean active) {
+        do Screen.setColor(active);
+        do Screen.drawRectangle(xPos + 1, yPos + 1, xPos + size - 1, yPos + 5);
+        return;
+    }
+
     /* accessors */
     method int getXPos() { return xPos; }
     method int getYPos() { return yPos; }

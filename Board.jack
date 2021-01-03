@@ -148,6 +148,23 @@ class Board {
         return values;    
     }
 
+    /* Returns the number of cells which are still empty */
+    method int getEmptyCellsNum() {
+        var int i;
+        var int sum;
+        var Cell c;
+        let i = 0;
+        let sum = 0;
+        while (i < 9) {
+            let c = cells[i];
+            if (c.getValue() = 0) {
+                let sum = sum + 1;
+            }
+            let i = i + 1;
+        }
+        return sum;
+    }
+
     /* disposes this board */
     method void dispose() {
         var int i;
